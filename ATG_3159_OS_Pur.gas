@@ -1,0 +1,48 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+V.Local.sSQL.Declare(String)
+V.Local.sSeq.Declare(String)
+V.Local.sLoc.Declare(String)
+V.Local.sDesc.Declare(String)
+V.Local.sDept.Declare(String)
+V.Local.sPL.Declare(String)
+
+'F.Intrinsic.Debug.Stop
+V.Local.sDept.Set(V.Passed.000015)
+V.Local.sDesc.Set(V.Passed.000013)
+V.Local.sPL.Set(V.Passed.000012)
+V.Local.sLoc.Set(V.Passed.000011)
+F.Intrinsic.String.Format(V.Local.sDesc,"                               ",V.Local.sDesc)
+
+F.ODBC.Connection!CON.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.Intrinsic.String.Format(V.Passed.000032,"000000",V.Local.sSeq)
+F.Intrinsic.String.Concat("Select LMO from V_Job_Operations where Job='",V.Passed.000029,"' and Suffix='",V.Passed.000030,"' and Seq='",V.Local.sSeq,"'",V.Local.sSQL)
+F.ODBC.Connection!CON.OpenRecordsetRO("rstJob",V.Local.sSQL)
+F.Intrinsic.Control.If(V.ODBC.CON!rstJob.EOF,=,False)
+	F.Intrinsic.Control.If(V.ODBC.CON!rstJob.FieldVal!LMO,=,"O")
+		V.Passed.000011.Set("OS")
+		V.Passed.000012.Set(V.Local.sPL)
+		V.Passed.000013.Set(V.Local.sDesc)
+		V.Passed.000015.Set(V.Local.sDept)
+		F.Intrinsic.Control.If(V.Caller.Hook,=,17183)
+			V.Passed.777777.Set(1)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		V.Passed.000011.Set(V.Local.sLoc)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+
+F.ODBC.CON!rstJob.Close
+
+F.ODBC.Connection!CON.Close
+
+Program.Sub.Main.End
+
+
